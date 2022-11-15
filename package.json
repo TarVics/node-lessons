@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/TarVics/node-lessons/issues"
   },
-  "homepage": "https://github.com/TarVics/node-lessons#readme"
+  "homepage": "https://github.com/TarVics/node-lessons#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
