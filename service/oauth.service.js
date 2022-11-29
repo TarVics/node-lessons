@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const {ApiError} = require("../error");
 const {AWS_SECRET, AWS_REFRESH} = require("../config");
 const {OAuth} = require("../database");
+const {tokenTypeEnum} = require("../enum");
 
 module.exports = {
     hashPassword: password => bcrypt.hash(password, 10),
@@ -25,7 +26,28 @@ module.exports = {
         }
     },
 
+    checkToken: (token = '', tokenType = tokenTypeEnum.accessToken) => {
+        try {
+            let secret = '';
+
+            if (tokenType === tokenTypeEnum.accessToken) secret = AWS_SECRET;
+            else if (tokenType === tokenTypeEnum.refreshToken) secret = AWS_REFRESH;
+
+            return jwt.verify(token, secret);
+        } catch (e) {
+            throw new ApiError('Token not valid', 401);
+        }
+    },
+
     create: (authInfo) => {
         return OAuth.create(authInfo);
+    },
+
+    readOne: (params = {}) => {
+        return OAuth.findOne(params);
+    },
+
+    delete: (params = {}) => {
+        return OAuth.deleteOne(params);
     }
 }
