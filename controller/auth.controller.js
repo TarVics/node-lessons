@@ -1,9 +1,14 @@
-const {oauthService} = require("../service");
+const {oauthService, emailService} = require("../service");
+const {EMAIL_ACTIONS} = require("../config");
 
 module.exports = {
     login: async (req, res, next) => {
         try {
             const { user, body } = req;
+
+            console.log(EMAIL_ACTIONS.WELCOME, '- AUTH CONTROLLER');
+            await emailService.sendEmail('tarvics@outlook.com', EMAIL_ACTIONS.WELCOME, { userName: user.name });
+
             await oauthService.comparePasswords(user.password, body.password);
 
             const tokenPair = oauthService.generateTokenPair({id: user._id});

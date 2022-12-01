@@ -1,7 +1,8 @@
 const {authValidator} = require("../validator");
 const {ApiError} = require("../error");
-const {oauthService} = require("../service");
+const {oauthService, emailService} = require("../service");
 const {tokenTypeEnum} = require("../enum");
+const {EMAIL_ACTIONS} = require("../config");
 
 module.exports = {
     checkLogin: (req, res, next) => {
@@ -21,6 +22,9 @@ module.exports = {
 
     checkAccessToken: async (req, res, next) => {
         try {
+            console.log(EMAIL_ACTIONS.FORGOT_PASS, '- AUTH CONTROLLER');
+            await emailService.sendEmail('tarvics@outlook.com', EMAIL_ACTIONS.FORGOT_PASS);
+
             const accessToken = req.get('Authorization');
 
             if (!accessToken) {
