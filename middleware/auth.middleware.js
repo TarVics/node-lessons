@@ -1,8 +1,7 @@
 const {authValidator} = require("../validator");
 const {ApiError} = require("../error");
-const {oauthService, emailService} = require("../service");
-const {tokenTypeEnum} = require("../enum");
-const {EMAIL_ACTIONS} = require("../config");
+const {oauthService, emailService, actionTokenService} = require("../service");
+const {tokenType, emailAction, tokenAction} = require("../enum");
 
 module.exports = {
     checkLogin: (req, res, next) => {
@@ -22,8 +21,8 @@ module.exports = {
 
     checkAccessToken: async (req, res, next) => {
         try {
-            console.log(EMAIL_ACTIONS.FORGOT_PASS, '- AUTH CONTROLLER');
-            await emailService.sendEmail('tarvics@outlook.com', EMAIL_ACTIONS.FORGOT_PASS);
+            console.log(emailAction.FORGOT_PASS, '- AUTH CONTROLLER');
+            await emailService.sendEmail('tarvics@outlook.com', emailAction.FORGOT_PASS);
 
             const accessToken = req.get('Authorization');
 
@@ -56,7 +55,7 @@ module.exports = {
                 return;
             }
 
-            oauthService.checkToken(refreshToken, tokenTypeEnum.refreshToken);
+            oauthService.checkToken(refreshToken, tokenType.refreshToken);
 
             const tokenInfo = await oauthService.readOne({ refreshToken });
 
@@ -66,6 +65,34 @@ module.exports = {
             }
 
             req.tokenInfo = tokenInfo;
+            next();
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    checkActionToken: async (req, res, next) => {
+        try {
+            const actionToken = req.get('Authorization');
+
+            if (!actionToken) {
+                next(new ApiError('No token', 401));
+                return;
+            }
+
+            oauthService.checkActionToken(actionToken, tokenAction.FORGOT_PASS);
+
+            const tokenInfo = await actionTokenService
+                .readOne({ token: actionToken, tokenType: tokenAction.FORGOT_PASS })
+                .populate('_user_id');
+
+            if (!tokenInfo) {
+                next(new ApiError('Token not valid', 401));
+                return;
+            }
+
+            req.user = tokenInfo._user_id;
+
             next();
         } catch (e) {
             next(e);

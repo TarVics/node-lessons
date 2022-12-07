@@ -1,7 +1,5 @@
-const User = require('./User');
-const OAuth = require('./OAuth');
-
 module.exports = {
-    OAuth,
-    User
+    OAuth: require('./OAuth'),
+    User: require('./User'),
+    ActionToken: require('./ActionToken')
 }

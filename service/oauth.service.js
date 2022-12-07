@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const {ApiError} = require("../error");
-const {AWS_SECRET, AWS_REFRESH} = require("../config");
+const {AWS_SECRET, AWS_REFRESH, FORGOT_PASS_TOKEN_PWD, CONFIRM_ACCOUNT_TOKEN_PWD} = require("../config");
 const {OAuth} = require("../database");
-const {tokenTypeEnum} = require("../enum");
+const {tokenAction} = require("../enum");
 
 module.exports = {
     hashPassword: password => bcrypt.hash(password, 10),
@@ -26,14 +26,48 @@ module.exports = {
         }
     },
 
-    checkToken: (token = '', tokenType = tokenTypeEnum.accessToken) => {
+    generateActionToken: (actionType, dataToSign = {}) => {
+        let secretWord = '';
+
+        switch (actionType) {
+            case tokenAction.FORGOT_PASS:
+                secretWord = FORGOT_PASS_TOKEN_PWD;
+                break;
+            case tokenAction.CONFIRM_ACCOUNT:
+                secretWord = CONFIRM_ACCOUNT_TOKEN_PWD;
+                break;
+        }
+
+        return jwt.sign(dataToSign, secretWord, {expiresIn: '7d'});
+    },
+
+    checkToken: (token = '', tokenType = tokenType.accessToken) => {
         try {
             let secret = '';
 
-            if (tokenType === tokenTypeEnum.accessToken) secret = AWS_SECRET;
-            else if (tokenType === tokenTypeEnum.refreshToken) secret = AWS_REFRESH;
+            if (tokenType === tokenType.accessToken) secret = AWS_SECRET;
+            else if (tokenType === tokenType.refreshToken) secret = AWS_REFRESH;
 
             return jwt.verify(token, secret);
+        } catch (e) {
+            throw new ApiError('Token not valid', 401);
+        }
+    },
+
+    checkActionToken: (token = '', actionType = tokenAction.FORGOT_PASS) => {
+        try {
+            let secretWord = '';
+
+            switch (actionType) {
+                case tokenAction.FORGOT_PASS:
+                    secretWord = FORGOT_PASS_TOKEN_PWD;
+                    break;
+                case tokenAction.CONFIRM_ACCOUNT:
+                    secretWord = CONFIRM_ACCOUNT_TOKEN_PWD;
+                    break;
+            }
+
+            return jwt.verify(token, secretWord);
         } catch (e) {
             throw new ApiError('Token not valid', 401);
         }

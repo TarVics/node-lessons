@@ -9,5 +9,7 @@ router.post('/login',
     authController.login);
 
 router.post('/refresh', authMiddleware.checkRefreshToken, authController.refresh);
+router.post('/password/forgot', userMiddleware.loadToReq('email'), authController.forgotPassword);
+router.put('/password/forgot', authMiddleware.checkActionToken, authController.setPasswordAfterForgot);
 
 module.exports = router;
