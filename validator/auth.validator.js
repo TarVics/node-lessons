@@ -1,10 +1,10 @@
 const Joi = require('joi');
 
-const {REGEX} = require("../config");
+const {regex} = require("../enum");
 
 module.exports = {
     loginValidator: Joi.object({
-        email: Joi.string().regex(REGEX.EMAIL).lowercase().trim().required(),
-        password: Joi.string().regex(REGEX.PASSWORD).required()
+        email: Joi.string().regex(regex.EMAIL).lowercase().trim().required(),
+        password: Joi.string().regex(regex.PASSWORD).required()
     })
 }

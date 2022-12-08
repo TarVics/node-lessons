@@ -7,8 +7,8 @@ module.exports = {
         try {
             const { user, body } = req;
 
-            console.log(emailAction.WELCOME, '- AUTH CONTROLLER');
-            await emailService.sendEmail('tarvics@outlook.com', emailAction.WELCOME, { userName: user.name });
+            // console.log(emailAction.WELCOME, '- AUTH CONTROLLER');
+            // await emailService.sendEmail('tarvics@outlook.com', emailAction.WELCOME, { userName: user.name });
 
             await oauthService.comparePasswords(user.password, body.password);
 
@@ -22,6 +22,30 @@ module.exports = {
             });
         } catch (e) {
             next(e)
+        }
+    },
+
+    logout: async (req, res, next) => {
+        try {
+            const { accessToken } = req.tokenInfo;
+
+            await oauthService.delete({ accessToken });
+
+            res.sendStatus(204);
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    logoutAll: async (req, res, next) => {
+        try {
+            const { _user_id } = req.tokenInfo;
+
+            await oauthService.deleteMany({ _user_id: _user_id._id });
+
+            res.sendStatus(204);
+        } catch (e) {
+            next(e);
         }
     },
 

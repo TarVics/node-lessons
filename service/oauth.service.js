@@ -83,5 +83,9 @@ module.exports = {
 
     delete: (params = {}) => {
         return OAuth.deleteOne(params);
+    },
+
+    deleteMany: (params = {}) => {
+        return OAuth.deleteMany(params);
     }
 }
