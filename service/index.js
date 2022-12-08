@@ -1,5 +1,5 @@
 const actionTokenService = require('./action-token.service');
-const emailService = require('./email.service');
+const emailService = require('./email.pug.service');
 const oauthService = require('./oauth.service');
 const userService = require('./user.service');
 

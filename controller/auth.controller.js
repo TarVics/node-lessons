@@ -9,6 +9,11 @@ module.exports = {
 
             // console.log(emailAction.WELCOME, '- AUTH CONTROLLER');
             // await emailService.sendEmail('tarvics@outlook.com', emailAction.WELCOME, { userName: user.name });
+            await emailService.sendEmail(user.email, emailAction.WELCOME,{
+                userName: user.name,
+                array: [{ number: 1}, { number: 2}, { number: 3}],
+                condition: false
+            });
 
             await oauthService.comparePasswords(user.password, body.password);
 
@@ -67,16 +72,16 @@ module.exports = {
 
     forgotPassword: async (req, res, next) => {
         try {
-            const user = req.user;
-            const actionToken = oauthService.generateActionToken(tokenAction.FORGOT_PASS, {email: user.email});
+            const { _id, email, name } = req.user;
+
+            const actionToken = oauthService.generateActionToken(tokenAction.FORGOT_PASS, {email});
             const forgotPasswordFEUrl = `${FRONTEND_URL}/password/new?token=${actionToken}`;
 
             await actionTokenService.create({
-                token: actionToken, tokenType: tokenAction.FORGOT_PASS, _user_id: user._id });
-            await emailService.sendEmail('victor.fzs10@gmail.com',
-                emailAction.FORGOT_PASS, {url: forgotPasswordFEUrl} );
+                token: actionToken, tokenType: tokenAction.FORGOT_PASS, _user_id: _id });
+            await emailService.sendEmail(email, emailAction.FORGOT_PASS, {url: forgotPasswordFEUrl, userName: name} );
 
-            res.status(201).json(tokenPair);
+            res.status(201);
         } catch (e) {
             next(e);
         }
