@@ -1,4 +1,4 @@
-const {oauthService, emailService, userService, actionTokenService} = require("../service");
+const {oauthService, emailService, userService, actionTokenService, oldPasswordService} = require("../service");
 const {tokenAction, emailAction} = require("../enum");
 const {FRONTEND_URL} = require("../config");
 
@@ -91,8 +91,10 @@ module.exports = {
         try {
             const { user, body } = req;
 
-            await actionTokenService.delete(req.get('Authorization'));
             const hashPassword = await oauthService.hashPassword(body.password);
+
+            await oldPasswordService.create({ _user_id: user._id, password: user.password});
+            await actionTokenService.delete(req.get('Authorization'));
             await userService.update(user._id, {password: hashPassword});
 
             res.status(200);

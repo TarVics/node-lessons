@@ -1,6 +1,6 @@
 const {authValidator} = require("../validator");
 const {ApiError} = require("../error");
-const {oauthService, /*emailService,*/ actionTokenService} = require("../service");
+const {oauthService, /*emailService,*/ actionTokenService, oldPasswordService} = require("../service");
 const {tokenType, /*emailAction,*/ tokenAction} = require("../enum");
 
 module.exports = {
@@ -99,6 +99,31 @@ module.exports = {
         } catch (e) {
             next(e);
         }
-    }
+    },
+
+    checkOldPasswords: async (req, res, next) => {
+        try {
+            const { user, body } = req;
+            const oldPasswords = await oldPasswordService.readMany(
+                { _user_id: user._id }/*, {password: 1}*/ /* , {_id: 0}*/).lean()/*.projection({password: 1})*/;
+
+            if (!oldPasswords.length) {
+                return next();
+            }
+
+            const results = await Promise.all(oldPasswords.map((record) =>
+                oauthService.compareOldPasswords(record.password, body.password)));
+
+            const condition = results.some((res) => res);
+
+            if (condition) {
+                return next(new ApiError('This is old password', 409));
+            }
+
+            next();
+        } catch (e) {
+            next(e);
+        }
+    },
 
 }
