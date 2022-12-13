@@ -1,6 +1,10 @@
+const User = require('./User');
+
+console.log('!!!!', User);
+
 module.exports = {
+    User,
     OAuth: require('./OAuth'),
-    User: require('./User'),
     ActionToken: require('./ActionToken'),
     OldPassword: require('./OldPassword')
 }

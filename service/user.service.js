@@ -10,6 +10,7 @@ module.exports = {
     },
 
     readOne: (params = {}) => {
+        console.log(params);
         return User.findOne(params);
     },
 

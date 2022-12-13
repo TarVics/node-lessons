@@ -1,11 +1,12 @@
-const {userService, oauthService} = require("../service");
+const {userService/*, oauthService*/} = require("../service");
+const {User} = require("../database");
 
 module.exports = {
     create: async (req, res, next) => {
         try {
-            const hashPassword = await oauthService.hashPassword(req.body.password);
-
-            const user = await userService.create({...req.body, password: hashPassword});
+            // const hashPassword = await oauthService.hashPassword(req.body.password);
+            // const user = await userService.create({...req.body, password: hashPassword});
+            const user = await User.createWithHashPassword(req.body);
 
             res.status(201).json(user);
         } catch (e) {
@@ -24,6 +25,13 @@ module.exports = {
 
     readFromReq: async (req, res, next) => {
         try {
+            // req.user.testMethod();
+            // req.user.comparePasswords();
+            // console.log('-----------------------------');
+            // User.testStatic();
+            // User.createUserWithHashPassword();
+
+
             res.json(req.user);
         } catch (e) {
             next(e)

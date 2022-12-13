@@ -7,5 +7,5 @@ const cronRunner = () => {
 };
 
 module.exports = {
-  cronRunner,
+  cronRunner
 };

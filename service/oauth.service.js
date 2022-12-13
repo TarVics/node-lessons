@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 
 const {ApiError} = require("../error");
 const {AWS_SECRET, AWS_REFRESH, FORGOT_PASS_TOKEN_PWD, CONFIRM_ACCOUNT_TOKEN_PWD} = require("../config");
-const {OAuth} = require("../database");
-const {tokenAction} = require("../enum");
+const OAuth = require("../database/OAuth");
+const {tokenAction, tokenType: {accessToken, refreshToken}} = require("../enum");
 
 module.exports = {
     hashPassword: password => bcrypt.hash(password, 10),
@@ -45,12 +45,12 @@ module.exports = {
         return jwt.sign(dataToSign, secretWord, {expiresIn: '7d'});
     },
 
-    checkToken: (token = '', tokenType = tokenType.accessToken) => {
+    checkToken: (token = '', type = accessToken) => {
         try {
             let secret = '';
 
-            if (tokenType === tokenType.accessToken) secret = AWS_SECRET;
-            else if (tokenType === tokenType.refreshToken) secret = AWS_REFRESH;
+            if (type === accessToken) secret = AWS_SECRET;
+            else if (type === refreshToken) secret = AWS_REFRESH;
 
             return jwt.verify(token, secret);
         } catch (e) {

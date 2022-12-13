@@ -15,7 +15,8 @@ module.exports = {
                 condition: false
             });
 
-            await oauthService.comparePasswords(user.password, body.password);
+            //await oauthService.comparePasswords(user.password, body.password);
+            await user.comparePasswords(body.password);
 
             const tokenPair = oauthService.generateTokenPair({id: user._id});
 

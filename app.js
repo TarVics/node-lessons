@@ -1,8 +1,12 @@
+const swaggerUI = require('swagger-ui-express');
 const express = require('express');
 const mongoose = require('mongoose');
 
 const config = require('./config');
 const {cronRunner} = require('./cron');
+
+// https://petstore.swagger.io/v2/swagger.json
+const swaggerJson = require('./swagger.json');
 const {authRouter, userRouter} = require("./router");
 
 const app = express();
@@ -12,6 +16,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerJson));
 
 app.get('/', (req, res) => {
     res.end('Welcome to NODE JS!!!')
@@ -19,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.use((err, req, res, next) => {
    res.status(err.status || 500).json({
-       message: err.message || 'Unknown error',
+       message: err.message + '(' + err.stack + ')' || 'Unknown error',
        status: err.status || 500
    });
 });
