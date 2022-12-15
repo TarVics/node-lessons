@@ -1,5 +1,10 @@
+/*
+* npm i sharp - Ужимання фоток
+* */
+
 const swaggerUI = require('swagger-ui-express');
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 
 const config = require('./config');
@@ -13,6 +18,9 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(express.static('static'));
+
+app.use(fileUpload());
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);

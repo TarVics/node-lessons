@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const {userController} = require("../controller");
 const {userMiddleware, authMiddleware} = require("../middleware");
+const {checkUploadImage} = require("../middleware/file.middleware");
 
 router.get('/',
     userController.readAll);
@@ -28,5 +29,13 @@ router.delete('/:userId',
     userMiddleware.checkUserId,
     authMiddleware.checkAccessToken,
     userController.delete);
+
+router.patch(
+    '/:userId/avatar',
+    checkUploadImage,
+    userMiddleware.checkUserId,
+    userMiddleware.loadToReq('userId', 'params', '_id'),
+    userController.uploadAvatar
+);
 
 module.exports = router;
