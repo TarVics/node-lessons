@@ -17,7 +17,8 @@ module.exports = {
 
     readAll: async (req, res, next) => {
         try {
-            const users = await userService.readAll();
+            // Обробка пагінації при додаванні параметрів командної строки: ddd?page=1&limit=10
+            const users = await userService.readAll(req.query);
             res.json(users);
         } catch (e) {
             next(e)

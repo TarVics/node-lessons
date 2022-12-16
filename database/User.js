@@ -9,6 +9,7 @@ const userSchema = new Schema({
     age: {type: Number, default: 18}
 }, {
     timestamps: true,
+    versionKey: false,
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
